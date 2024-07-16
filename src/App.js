@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Card from "./components/Card";
 import PokeCard from "./components/PokeCard";
 
@@ -10,16 +10,14 @@ function App() {
   const [nextUrl, setNextUrl] = useState();
   const [prevUrl, setPrevUrl] = useState();
   const [pokeCard, setPokeCard] = useState();
-  const fetchApi = async () => {
+  const fetchApi = useCallback(async () => {
     setLoading(true);
     const res = await axios.get(url);
-    await axios.get(url);
-    setLoading(true);
     setNextUrl(res.data.next);
     setPrevUrl(res.data.previous);
     getPokemon(res.data.results);
     setLoading(false);
-  };
+  }, [url]);
 
   const getPokemon = async (res) => {
     res.map(async (item) => {
@@ -35,7 +33,7 @@ function App() {
 
   useEffect(() => {
     fetchApi();
-  }, [url]);
+  }, [url, fetchApi]);
 
   return (
     <>
@@ -80,34 +78,3 @@ function App() {
 }
 
 export default App;
-
-/*
-
-
-
-  const nextUrlHandler = async (res) => {
-    await axios
-      .get(`https://pokeapi.co/api/v2/pokemon?offset=${pageCount}&limit=20`)
-      .then((response) => {
-        setLoading(true);
-        getPokemon(response.data.results);
-      });
-
-    setPageCount(pageCount + 20);
-  };
-  const prevUrlHandler = async (res) => {
-    await axios
-      .get(`https://pokeapi.co/api/v2/pokemon?offset=${pageCount}&limit=20`)
-      .then((response) => {
-        setLoading(true);
-        getPokemon(response.data.results);
-      });
-    if (pageCount > 20) {
-      setPageCount(pageCount - 20);
-    }
-    {
-      return;
-    }
-  };
-
-*/
